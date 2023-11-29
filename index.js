@@ -5,8 +5,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-console.log(process.env.STRIPE_SECRET_KEY);
-
 const app = express();
 const port = 3000; //add your port here
 
@@ -20,7 +18,7 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Now Live`);
 });
 
 app.post("/create-payment-intent", async (req, res) => {
@@ -128,11 +126,9 @@ app.post("/create-checkout", async (req, res) => {
   const hiredApplicantStripeID = req.body[0].workerStripeID;
   const confirmedPrice = parseInt(req.body[1].confirmedPrice);
   // const applicationFee = req.body[2].applicationFee;
-  const applicationFee = parseInt(req.body[1].confirmedPrice * 0.13)
+  const applicationFee = parseInt(req.body[1].confirmedPrice * 0.13);
 
-  console.log(applicationFee, confirmedPrice)
-
-  
+  console.log(applicationFee, confirmedPrice);
 
   const session = await stripe.checkout.sessions.create({
     success_url: "https://shimmering-snickerdoodle-9c6d0b.netlify.app/",
@@ -154,14 +150,21 @@ app.post("/create-checkout", async (req, res) => {
     payment_intent_data: {
       application_fee_amount: applicationFee,
       transfer_data: {
-        destination: hiredApplicantStripeID
-      }
-    }
+        destination: hiredApplicantStripeID,
+      },
+    },
   });
 
   // return session
 
   console.log(session.url);
+
+  res.json({ session: session });
+});
+
+app.post("/check-payment-status", async (req, res) => {
+  const checkoutSessionID = req.body.paymentId;
+  const session = await stripe.checkout.sessions.retrieve(checkoutSessionID);
 
   res.json({ session: session });
 });
