@@ -657,7 +657,7 @@ app.post("/create-individual-subscription-annual", async (req, res) => {
         {
           //live price id price_1QFUL4GOViWTUZKUmsUV5AnF
           //test price id price_1QFeEiGOViWTUZKUw46EuVEQ
-          price: "price_1QFeEiGOViWTUZKUw46EuVEQ",
+          price: "price_1QFUL4GOViWTUZKUmsUV5AnF",
           quantity: 1,
         },
       ],
