@@ -14,9 +14,9 @@ const app = express();
 // );
 
 app.use(
-  cors ({
-    origin: 'https://getfulfil.com',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  cors({
+    origin: "https://getfulfil.com",
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   })
 );
 
@@ -94,7 +94,6 @@ app.post("/create-stripe-account-web", async (req, res) => {
           requested: true,
         },
       },
-   
     });
 
     //create account link
@@ -120,8 +119,6 @@ app.post("/create-stripe-account-web", async (req, res) => {
   }
 });
 
-
-
 app.post("/create-stripe-account", async (req, res) => {
   // console.log("coming through?",req)
   try {
@@ -134,7 +131,7 @@ app.post("/create-stripe-account", async (req, res) => {
         card_payments: {
           requested: true,
         },
-     
+
         transfers: {
           requested: true,
         },
@@ -186,13 +183,12 @@ app.post("/verify-stripe-account", async (req, res) => {
   // const stripeID = req.body.id;
 
   //this one is for web
-  const stripeID = req.body.stripeID
-  console.log("stripe id from server", req.body.stripeID)
+  const stripeID = req.body.stripeID;
+  console.log("stripe id from server", req.body.stripeID);
 
   const account = await stripe.accounts.retrieve(stripeID);
 
-
-console.log("account from verification",account)
+  console.log("account from verification", account);
   console.log(
     "this is to check if account is verified payments",
     account.charges_enabled
@@ -335,7 +331,7 @@ app.post("/create-checkout-web-embedded", async (req, res) => {
   const doerUID = req.body[2].doerUID;
   const jobID = req.body[3].jobID;
   const neederUID = req.body[4].neederUID;
-  const jobTitle = req.body[5].jobTitle
+  const jobTitle = req.body[5].jobTitle;
 
   console.log(applicationFee, confirmedPrice);
 
@@ -343,7 +339,6 @@ app.post("/create-checkout-web-embedded", async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
 
-     
       payment_method_types: ["card"],
       line_items: [
         {
@@ -363,7 +358,7 @@ app.post("/create-checkout-web-embedded", async (req, res) => {
         doerUID: doerUID,
         neederUID: neederUID,
         jobID: jobID,
-        jobTitle: jobTitle
+        jobTitle: jobTitle,
       },
       payment_intent_data: {
         application_fee_amount: applicationFee,
@@ -372,59 +367,53 @@ app.post("/create-checkout-web-embedded", async (req, res) => {
         },
       },
       return_url:
-      "https://getfulfil.com/NeederPaymentComplete/?session_id={CHECKOUT_SESSION_ID}",
-    
-    
+        "https://getfulfil.com/NeederPaymentComplete/?session_id={CHECKOUT_SESSION_ID}",
     });
 
-
-  
-//test
-res.send({clientSecret: session.client_secret});
-
+    //test
+    res.send({ clientSecret: session.client_secret });
 
     // return session
     // res.send({clientSecret: session.client_secret});
-    
-    console.log(session.client_secret)
+
+    console.log(session.client_secret);
   } catch (err) {
     console.log("error Im looking for", err);
     res.json({ error: err });
   }
 });
 
-app.get('/session-status', async (req, res) => {
+app.get("/session-status", async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
-console.log("hirt")
+  console.log("hirt");
   res.send({
-    userID : session.metadata.neederUID,
+    userID: session.metadata.neederUID,
     jobTitle: session.metadata.jobTitle,
     status: session.status,
     customer_email: session.customer_details.email,
-    confirmedPrice: session.metadata.confirmedPrice
+    confirmedPrice: session.metadata.confirmedPrice,
   });
 });
 
-app.get('/single-post-session-status', async (req, res) => {
+app.get("/single-post-session-status", async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
-console.log("single post hit", session.status)
+  console.log("single post hit", session.status);
   res.send({
     status: session.status,
   });
 });
 
-
 app.post("/stripe-log-in", async (req, res) => {
-  const stripeID = req.body.stripeID
-  console.log("stripe id from server", req.body.stripeID)
+  const stripeID = req.body.stripeID;
+  console.log("stripe id from server", req.body.stripeID);
 
   const loginLink = await stripe.accounts.createLoginLink(stripeID);
 
   res.send({
-    loginLink : loginLink.url
-  })
-  console.log("server data",loginLink)
-})
+    loginLink: loginLink.url,
+  });
+  console.log("server data", loginLink);
+});
 
 app.post("/check-payment-status", async (req, res) => {
   console.log("its hitting", req.body.paymentId);
@@ -434,11 +423,9 @@ app.post("/check-payment-status", async (req, res) => {
   res.json({ session: session });
 });
 
-
-
 //credit / help from https://github.com/pagecow/stripe-subscribe-payments
 app.post("/create-subscription-session", async (req, res) => {
-  console.log("got em")
+  console.log("got em");
   try {
     const session = await stripe.checkout.sessions.create({
       success_url: "https://getfulfil.com/DoerSubscriptionComplete",
@@ -449,45 +436,39 @@ app.post("/create-subscription-session", async (req, res) => {
           quantity: 1,
         },
       ],
-      mode: 'subscription',
+      mode: "subscription",
     });
-    console.log("session: ", session.id, session.url, session)
+    console.log("session: ", session.id, session.url, session);
 
     // get id, save to user, return url
     const sessionId = session.id;
     console.log("sessionId: ", sessionId);
 
     // save session.id to the user in your database
-    res.json({session: session})
+    res.json({ session: session });
 
     //original
     // res.json({ url: session.url })
   } catch (e) {
-    res.status(500).json({ error: e.message })
-    console.log(e)
+    res.status(500).json({ error: e.message });
+    console.log(e);
   }
-})
+});
 
-
-app.post('/check-subscription-status', async (req, res) => {
+app.post("/check-subscription-status", async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(req.body.sessionID);
 
   res.send({
     status: session.status,
     customer_email: session.customer_details.email,
-
   });
 });
 
-
 app.post("/create-checkout-single-post", async (req, res) => {
-
-
   try {
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
 
-     
       payment_method_types: ["card"],
       line_items: [
         {
@@ -497,74 +478,56 @@ app.post("/create-checkout-single-post", async (req, res) => {
       ],
       mode: "payment",
       return_url:
-      "https://getfulfil.com/Homepage/?session_id={CHECKOUT_SESSION_ID}",
-    
-   
-    
-    
+        "https://getfulfil.com/Homepage/?session_id={CHECKOUT_SESSION_ID}",
     });
 
-
-  
-//test
-res.send({clientSecret: session.client_secret});
-
+    //test
+    res.send({ clientSecret: session.client_secret });
 
     // return session
     // res.send({clientSecret: session.client_secret});
-    
-    console.log(session.client_secret)
+
+    console.log(session.client_secret);
   } catch (err) {
     console.log("error Im looking for", err);
     res.json({ error: err });
   }
 });
 
-
 app.post("/create-business-subscription-session", async (req, res) => {
-
-  console.log("create subscription back end")
+  console.log("create subscription back end");
 
   try {
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
 
-     
       payment_method_types: ["card"],
       line_items: [
         {
-          
           price: "price_1PbRUDGOViWTUZKU2VPkZkT4",
           quantity: 1,
         },
       ],
-      mode: 'subscription',
+      mode: "subscription",
       subscription_data: {
         trial_settings: {
           end_behavior: {
-            missing_payment_method: 'cancel',
+            missing_payment_method: "cancel",
           },
         },
         trial_period_days: 30,
       },
       return_url:
-      "https://getfulfil.com/Homepage/?session_id={CHECKOUT_SESSION_ID}",
-    
-   
-    
-    
+        "https://getfulfil.com/Homepage/?session_id={CHECKOUT_SESSION_ID}",
     });
 
-
-  
-//test
-res.send({clientSecret: session.client_secret});
-
+    //test
+    res.send({ clientSecret: session.client_secret });
 
     // return session
     // res.send({clientSecret: session.client_secret});
-    
-    console.log(session.client_secret)
+
+    console.log(session.client_secret);
   } catch (err) {
     console.log("error Im looking for", err);
     res.json({ error: err });
@@ -572,8 +535,7 @@ res.send({clientSecret: session.client_secret});
 });
 
 app.post("/create-business-subscription-session-starter", async (req, res) => {
-
-  console.log("create subscription back end")
+  console.log("create subscription back end");
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -585,43 +547,144 @@ app.post("/create-business-subscription-session-starter", async (req, res) => {
           quantity: 1,
         },
       ],
-      mode: 'subscription',
+      mode: "subscription",
       subscription_data: {
         trial_settings: {
           end_behavior: {
-            missing_payment_method: 'cancel',
+            missing_payment_method: "cancel",
           },
         },
         trial_period_days: 30,
       },
       return_url:
-      "https://getfulfil.com/Homepage/?session_id={CHECKOUT_SESSION_ID}",
-    
-   
-    
-    
+        "https://getfulfil.com/Homepage/?session_id={CHECKOUT_SESSION_ID}",
     });
 
-
-  
-//test
-res.send({clientSecret: session.client_secret});
-
+    //test
+    res.send({ clientSecret: session.client_secret });
 
     // return session
     // res.send({clientSecret: session.client_secret});
-    
-    console.log(session.client_secret)
+
+    console.log(session.client_secret);
   } catch (err) {
     console.log("error Im looking for", err);
     res.json({ error: err });
   }
 });
 
-
-app.get('/business-subscription-session-status', async (req, res) => {
+app.get("/business-subscription-session-status", async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
-console.log("business hit", session.status)
+  console.log("business hit", session.status);
+
+  //LIVE
+  res.send({
+    status: session.status,
+  });
+
+  // TEST
+  // res.send({
+  //   status: "complete",
+  // });
+});
+
+
+app.post("/create-individual-subscription-monthly", async (req, res) => {
+  console.log("create subscription back end");
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: "embedded",
+
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price: "price_1QFUGGGOViWTUZKUhqjLgjui",
+          quantity: 1,
+        },
+      ],
+      mode: "subscription",
+      subscription_data: {
+        trial_settings: {
+          end_behavior: {
+            missing_payment_method: "cancel",
+          },
+        },
+      },
+      return_url:
+        "https://getfulfil.com/DoerPayment/?session_id={CHECKOUT_SESSION_ID}",
+    });
+
+    //test
+    res.send({ clientSecret: session.client_secret });
+
+    // return session
+    // res.send({clientSecret: session.client_secret});
+
+    console.log(session.client_secret);
+  } catch (err) {
+    console.log("error Im looking for", err);
+    res.json({ error: err });
+  }
+});
+
+app.get("/doer-monthly-subscription-session-status", async (req, res) => {
+  const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
+  console.log("business hit", session.status);
+
+  //LIVE
+  res.send({
+    status: session.status,
+  });
+
+  // TEST
+  // res.send({
+  //   status: "complete",
+  // });
+});
+
+app.post("/create-individual-subscription-annual", async (req, res) => {
+  console.log("create subscription back end");
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: "embedded",
+
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price: "price_1QFUL4GOViWTUZKUmsUV5AnF",
+          quantity: 1,
+        },
+      ],
+      mode: "subscription",
+      subscription_data: {
+        trial_settings: {
+          end_behavior: {
+            missing_payment_method: "cancel",
+          },
+        },
+      },
+      return_url:
+        "https://getfulfil.com/DoerPayment/?session_id={CHECKOUT_SESSION_ID}",
+    });
+
+    //test
+    res.send({ clientSecret: session.client_secret });
+
+    // return session
+    // res.send({clientSecret: session.client_secret});
+
+    console.log(session.client_secret);
+  } catch (err) {
+    console.log("error Im looking for", err);
+    res.json({ error: err });
+  }
+});
+
+app.get("/doer-annual-subscription-session-status", async (req, res) => {
+  const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
+  console.log("business hit", session.status);
 
   //LIVE
   res.send({
