@@ -599,6 +599,8 @@ app.post("/create-individual-subscription-monthly", async (req, res) => {
       payment_method_types: ["card"],
       line_items: [
         {
+             //live price id price_1QFUGGGOViWTUZKUhqjLgjui
+          //test price id price_1QFeEiGOViWTUZKUw46EuVEQ
           price: "price_1QFUGGGOViWTUZKUhqjLgjui",
           quantity: 1,
         },
@@ -653,7 +655,9 @@ app.post("/create-individual-subscription-annual", async (req, res) => {
       payment_method_types: ["card"],
       line_items: [
         {
-          price: "price_1QFUL4GOViWTUZKUmsUV5AnF",
+          //live price id price_1QFUL4GOViWTUZKUmsUV5AnF
+          //test price id price_1QFeEiGOViWTUZKUw46EuVEQ
+          price: "price_1QFeEiGOViWTUZKUw46EuVEQ",
           quantity: 1,
         },
       ],
