@@ -487,7 +487,7 @@ app.post("/create-checkout-single-post", async (req, res) => {
     // return session
     // res.send({clientSecret: session.client_secret});
 
-    console.log(session.client_secret);
+    // console.log(session.client_secret);
   } catch (err) {
     console.log("error Im looking for", err);
     res.json({ error: err });
@@ -527,7 +527,7 @@ app.post("/create-business-subscription-session", async (req, res) => {
     // return session
     // res.send({clientSecret: session.client_secret});
 
-    console.log(session.client_secret);
+    // console.log(session.client_secret);
   } catch (err) {
     console.log("error Im looking for", err);
     res.json({ error: err });
@@ -599,7 +599,6 @@ app.post("/create-individual-subscription-monthly", async (req, res) => {
       payment_method_types: ["card"],
       line_items: [
         {
-             //live price id price_1QFUGGGOViWTUZKUhqjLgjui
           //test price id price_1QFeEiGOViWTUZKUw46EuVEQ
           price: "price_1QFUGGGOViWTUZKUhqjLgjui",
           quantity: 1,
@@ -625,7 +624,7 @@ app.post("/create-individual-subscription-monthly", async (req, res) => {
 
     console.log(session.client_secret);
   } catch (err) {
-    console.log("error Im looking for", err);
+    console.log("error individual monthly", err);
     res.json({ error: err });
   }
 });
@@ -655,9 +654,8 @@ app.post("/create-individual-subscription-annual", async (req, res) => {
       payment_method_types: ["card"],
       line_items: [
         {
-          //live price id price_1QFUL4GOViWTUZKUmsUV5AnF
           //test price id price_1QFeEiGOViWTUZKUw46EuVEQ
-          price: "price_1QFUL4GOViWTUZKUmsUV5AnF",
+          price: "price_1QG1XHGOViWTUZKUGxFoLvGf",
           quantity: 1,
         },
       ],
@@ -681,14 +679,14 @@ app.post("/create-individual-subscription-annual", async (req, res) => {
 
     console.log(session.client_secret);
   } catch (err) {
-    console.log("error Im looking for", err);
+    console.log("error individual annual", err);
     res.json({ error: err });
   }
 });
 
 app.get("/doer-annual-subscription-session-status", async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
-  console.log("business hit", session.status);
+
 
   //LIVE
   res.send({
