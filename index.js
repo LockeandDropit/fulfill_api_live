@@ -588,6 +588,45 @@ app.get("/business-subscription-session-status", async (req, res) => {
   // });
 });
 
+app.post("/create-doer-free-trial", async (req, res) => {
+  console.log("create subscription back end");
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: "embedded",
+
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          //test price id price_1QFeEiGOViWTUZKUw46EuVEQ
+          price: "price_1QFUGGGOViWTUZKUhqjLgjui",
+          quantity: 1,
+        },
+      ],
+      subscription_data: {
+        trial_settings: {
+          end_behavior: {
+            missing_payment_method: "cancel",
+          },
+        },
+        trial_period_days: 30,
+      },
+      return_url:
+        "https://getfulfil.com/DoerFreeTrial/?session_id={CHECKOUT_SESSION_ID}",
+    });
+
+    //test
+    res.send({ clientSecret: session.client_secret });
+
+    // return session
+    // res.send({clientSecret: session.client_secret});
+
+    console.log(session.client_secret);
+  } catch (err) {
+    console.log("error individual monthly", err);
+    res.json({ error: err });
+  }
+});
 
 app.post("/create-individual-subscription-monthly", async (req, res) => {
   console.log("create subscription back end");
@@ -613,7 +652,7 @@ app.post("/create-individual-subscription-monthly", async (req, res) => {
         },
       },
       return_url:
-        "https://getfulfil.com/DoerPayment/?session_id={CHECKOUT_SESSION_ID}",
+        "https://getfulfil.com/DoerMapView/?session_id={CHECKOUT_SESSION_ID}",
     });
 
     //test
