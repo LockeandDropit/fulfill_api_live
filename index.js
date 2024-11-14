@@ -603,6 +603,7 @@ app.post("/create-doer-free-trial", async (req, res) => {
           quantity: 1,
         },
       ],
+      mode: "subscription",
       subscription_data: {
         trial_settings: {
           end_behavior: {
@@ -623,7 +624,7 @@ app.post("/create-doer-free-trial", async (req, res) => {
 
     console.log(session.client_secret);
   } catch (err) {
-    console.log("error individual monthly", err);
+    console.log("error free trial", err);
     res.json({ error: err });
   }
 });
@@ -707,7 +708,7 @@ app.post("/create-individual-subscription-annual", async (req, res) => {
         },
       },
       return_url:
-        "https://getfulfil.com/DoerPayment/?session_id={CHECKOUT_SESSION_ID}",
+        "https://getfulfil.com/DoerMapView/?session_id={CHECKOUT_SESSION_ID}",
     });
 
     //test
