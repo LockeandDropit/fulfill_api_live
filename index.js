@@ -494,6 +494,9 @@ app.post("/create-checkout-single-post", async (req, res) => {
   }
 });
 
+
+
+
 app.post("/create-business-subscription-session", async (req, res) => {
   console.log("create subscription back end");
 
@@ -727,6 +730,64 @@ app.post("/create-individual-subscription-annual", async (req, res) => {
 app.get("/doer-annual-subscription-session-status", async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
 
+
+  //LIVE
+  res.send({
+    status: session.status,
+  });
+
+  // TEST
+  // res.send({
+  //   status: "complete",
+  // });
+});
+
+
+
+app.post("/create-subscription", async (req, res) => {
+  console.log("create subscription back end");
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: "embedded",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price: "price_1QuhmSGOViWTUZKUrxY5U5hS",
+          quantity: 1,
+        },
+      ],
+      mode: "subscription",
+      subscription_data: {
+        trial_settings: {
+          end_behavior: {
+            missing_payment_method: "cancel",
+          },
+        },
+        trial_period_days: 14,
+      },
+      return_url:
+        "https://getfulfil.com/DoerHomepage/?session_id={CHECKOUT_SESSION_ID}",
+    });
+
+    //test
+    res.send({ clientSecret: session.client_secret });
+
+    // return session
+    // res.send({clientSecret: session.client_secret});
+
+    console.log(session.client_secret);
+  } catch (err) {
+    console.log("error Im looking for", err);
+    res.json({ error: err });
+  }
+});
+
+
+
+app.get("/create-subscription-session-status", async (req, res) => {
+  const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
+  console.log("business hit", session.status);
 
   //LIVE
   res.send({
